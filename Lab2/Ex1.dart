@@ -1,4 +1,12 @@
+/*
+  1.	Create a main() function.
+ */
 void main() {
+
+  /*
+  2.	Declare variables using: int, double, String, bool.
+   */
+
   // Integer variable
   int age = 21;
 
@@ -10,6 +18,10 @@ void main() {
 
   //Boolean varible
   bool isStudent = true;
+
+  /*
+  3.	Use print() and string interpolation ($var, ${expr}) to show values.
+   */
 
   // Print variables using string interpolation
   print("Name: $name");
