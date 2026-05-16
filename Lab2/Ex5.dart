@@ -5,11 +5,11 @@ Future<void> main() async {
   2. Use Future.delayed() to simulate loading.
    */
 
-  print("Loading data...");
+  print("Checking order status...");
 
-  String result = await fetchData();
+  String status = await checkOrderStatus("ORD123");
 
-  print(result);
+  print(status);
 
   print("");
 
@@ -17,18 +17,18 @@ Future<void> main() async {
   3. Practice null-safety operators (?, ??, !).
    */
 
-  String? name;
+  String? customerName;
 
   // ??
-  print("Name: ${name ?? "Unknown"}");
+  print("Customer name: ${customerName ?? "Guest"}");
 
   // ?.
-  print("Name length: ${name?.length}");
+  print("Customer name length: ${customerName?.length}");
+
+  String? deliveryAddress = "Hanoi, Vietnam";
 
   // !
-  String? city = "LaoCai";
-
-  print("City length: ${city!.length}");
+  print("Delivery address length: ${deliveryAddress!.length}");
 
   print("");
 
@@ -36,10 +36,12 @@ Future<void> main() async {
   4. Create a simple Stream of integers and listen to values.
    */
 
-  Stream<int> numberStream = countStream();
+  print("Tracking delivery progress:");
 
-  numberStream.listen((number) {
-    print("Stream value: $number");
+  Stream<int> progressStream = deliveryProgress();
+
+  progressStream.listen((progress) {
+    print("Delivery progress: $progress%");
   });
 
 }
@@ -47,22 +49,22 @@ Future<void> main() async {
 /*
 Async function using Future + await
 */
-Future<String> fetchData() async {
+Future<String> checkOrderStatus(String orderId) async {
 
   await Future.delayed(Duration(seconds: 2));
 
-  return "Data loaded successfully";
+  return "Order $orderId is being delivered";
 }
 
 /*
 Simple Stream of integers
 */
-Stream<int> countStream() async* {
+Stream<int> deliveryProgress() async* {
 
-  for (int i = 1; i <= 5; i++) {
+  for (int progress = 20; progress <= 100; progress += 20) {
 
     await Future.delayed(Duration(seconds: 1));
 
-    yield i;
+    yield progress;
   }
 }
