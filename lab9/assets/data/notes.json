@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "title": "Welcome to Lab 9",
+    "description": "This is a sample note loaded from assets."
+  },
+  {
+    "id": "2",
+    "title": "Local Persistence",
+    "description": "We use path_provider for local storage."
+  }
+]
