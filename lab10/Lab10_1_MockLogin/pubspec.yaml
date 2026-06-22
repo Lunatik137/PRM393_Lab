@@ -1,0 +1,20 @@
+name: lab10_1_mock_login
+description: Lab 10 Project 1 Mock Login
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
