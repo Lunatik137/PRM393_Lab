@@ -1,26 +1,31 @@
-# Firebase Setup Instructions for Lab 10.4
+# Firebase Setup Instructions
 
-## 1. Firebase Console
-- Go to [Firebase Console](https://console.firebase.google.com/).
-- Create a new project named `prmlab10`.
-- Add an Android app with package name `com.prm.lab10`.
-- Download `google-services.json` and place it in `android/app/`.
+To run this project with Firebase Google Sign-In, you must complete the following steps:
 
-## 2. Authentication
-- Enable **Google Sign-In** in the Authentication section of Firebase Console.
+## 1. Create a Firebase Project
+1. Go to the [Firebase Console](https://console.firebase.google.com/).
+2. Create a new project.
+3. Enable **Authentication** and choose **Google** as a sign-in provider.
 
-## 3. SHA-1 Fingerprint
-- You must provide your SHA-1 fingerprint to Firebase.
-- Run this in your terminal (inside `android/` folder):
-  ```bash
-  ./gradlew signingReport
-  ```
-- Copy the SHA-1 from `debug` and paste it into Firebase project settings for your Android app.
+## 2. Register Your Android App
+1. Add an Android app to your Firebase project.
+2. The package name should match the one in your `android/app/build.gradle.kts` (e.g., `com.example.lab10`).
+3. You **MUST** provide the **SHA-1** fingerprint for Google Sign-In to work.
 
-## 4. Android Configuration
+### How to get the SHA-1 key:
+Run the following command in your terminal:
+```bash
+cd android
+./gradlew signingReport
+```
+Look for the `SHA1` under the `debug` variant and paste it into the Firebase Console.
 
-### `android/build.gradle` (or `android/settings.gradle.kts`)
-Ensure the Google Services plugin is added.
+## 3. Download google-services.json
+1. Download the `google-services.json` file from Firebase.
+2. Place it in the `android/app/` directory of this Flutter project.
 
-### `android/app/build.gradle` (or `android/app/build.gradle.kts`)
-Apply the plugin: `id("com.google.gms.google-services")`
+## 4. Run the App
+After placing the `google-services.json` file, you can run the app:
+```bash
+flutter run
+```

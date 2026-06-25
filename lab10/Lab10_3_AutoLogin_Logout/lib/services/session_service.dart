@@ -13,13 +13,8 @@ class SessionService {
     return prefs.getString(_tokenKey);
   }
 
-  Future<void> removeToken() async {
+  Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
-  }
-
-  Future<bool> isLoggedIn() async {
-    final token = await getToken();
-    return token != null;
   }
 }

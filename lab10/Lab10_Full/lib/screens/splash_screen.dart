@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../services/session_service.dart';
+import '../services/firebase_auth_service.dart';
 import 'home_screen.dart';
+import 'profile_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,43 +13,35 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final _sessionService = SessionService();
-
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    _checkSession();
   }
 
-  Future<void> _checkLoginStatus() async {
+  Future<void> _checkSession() async {
     await Future.delayed(const Duration(seconds: 2));
     
-    // Check Firebase first
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-    if (firebaseUser != null) {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
-      return;
-    }
+    final sessionService = SessionService();
+    final firebaseAuthService = FirebaseAuthService();
+    
+    final token = await sessionService.getToken();
+    final googleUser = firebaseAuthService.currentUser;
 
-    // Then check local session (DummyJSON)
-    final isLoggedIn = await _sessionService.isLoggedIn();
-    if (mounted) {
-      if (isLoggedIn) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }
+    if (!mounted) return;
+
+    if (token != null && token.isNotEmpty) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (googleUser != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
     }
   }
 
@@ -59,9 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.rocket_launch, size: 100, color: Colors.blue),
-            SizedBox(height: 20),
+            Icon(Icons.hub, size: 100, color: Colors.blueAccent),
+            SizedBox(height: 24),
             CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Initializing App...'),
           ],
         ),
       ),

@@ -11,29 +11,29 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final _sessionService = SessionService();
-
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    _checkSession();
   }
 
-  Future<void> _checkLoginStatus() async {
+  Future<void> _checkSession() async {
+    // Add a small delay for the splash screen effect
     await Future.delayed(const Duration(seconds: 2));
-    final isLoggedIn = await _sessionService.isLoggedIn();
-    if (mounted) {
-      if (isLoggedIn) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }
+    
+    final sessionService = SessionService();
+    final token = await sessionService.getToken();
+
+    if (!mounted) return;
+
+    if (token != null && token.isNotEmpty) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
     }
   }
 
@@ -44,9 +44,11 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FlutterLogo(size: 100),
-            SizedBox(height: 20),
+            Icon(Icons.security, size: 100, color: Colors.blue),
+            SizedBox(height: 24),
             CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Checking Session...'),
           ],
         ),
       ),

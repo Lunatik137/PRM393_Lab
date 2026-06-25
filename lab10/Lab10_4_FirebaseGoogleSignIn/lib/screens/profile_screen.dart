@@ -1,22 +1,42 @@
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
-import '../services/auth_service.dart';
+import '../services/firebase_auth_service.dart';
+import 'login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
-  final UserModel user;
-  const ProfileScreen({super.key, required this.user});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final FirebaseAuthService _authService = FirebaseAuthService();
+
+  Future<void> _logout() async {
+    await _authService.signOut();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AuthService authService = AuthService();
+    final user = _authService.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('No user signed in.')),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
           IconButton(
-            onPressed: () => authService.signOut(),
             icon: const Icon(Icons.logout),
+            onPressed: _logout,
           ),
         ],
       ),
@@ -26,14 +46,24 @@ class ProfileScreen extends StatelessWidget {
           children: [
             if (user.photoURL != null)
               CircleAvatar(
-                backgroundImage: NetworkImage(user.photoURL!),
                 radius: 50,
+                backgroundImage: NetworkImage(user.photoURL!),
+              )
+            else
+              const CircleAvatar(
+                radius: 50,
+                child: Icon(Icons.person, size: 50),
               ),
-            const SizedBox(height: 20),
-            Text(user.displayName ?? 'No Name', style: const TextStyle(fontSize: 20)),
-            Text(user.email ?? 'No Email', style: const TextStyle(color: Colors.grey)),
-            const SizedBox(height: 10),
-            Text('UID: ${user.uid}', style: const TextStyle(fontSize: 12)),
+            const SizedBox(height: 24),
+            Text(
+              user.displayName ?? 'No Name',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              user.email ?? 'No Email',
+              style: const TextStyle(fontSize: 16),
+            ),
           ],
         ),
       ),

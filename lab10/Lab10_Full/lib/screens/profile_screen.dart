@@ -1,32 +1,73 @@
-// Fixed profile screen imports
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../services/firebase_auth_service.dart';
+import 'login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final FirebaseAuthService _authService = FirebaseAuthService();
+
+  Future<void> _logout() async {
+    await _authService.signOut();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _authService.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('No Google user signed in.')),
+      );
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(
+        title: const Text('Google Profile'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
+      ),
       body: Center(
-        child: user != null 
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (user.photoURL != null)
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(user.photoURL!),
-                    radius: 50,
-                  ),
-                const SizedBox(height: 20),
-                Text(user.displayName ?? 'No Name', style: const TextStyle(fontSize: 20)),
-                Text(user.email ?? 'No Email', style: const TextStyle(color: Colors.grey)),
-              ],
-            )
-          : const Text('Logged in via DummyJSON API (No extended profile)'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (user.photoURL != null)
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(user.photoURL!),
+              )
+            else
+              const CircleAvatar(
+                radius: 50,
+                child: Icon(Icons.person, size: 50),
+              ),
+            const SizedBox(height: 24),
+            Text(
+              user.displayName ?? 'No Name',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              user.email ?? 'No Email',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            const Text('Logged in via Firebase Google Sign-In', style: TextStyle(color: Colors.grey)),
+          ],
+        ),
       ),
     );
   }

@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
-import 'screens/notification_screen.dart';
+import 'services/notification_service.dart';
+import 'screens/home_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const NotificationApp());
+  await NotificationService().init();
+  runApp(const MyApp());
 }
 
-class NotificationApp extends StatelessWidget {
-  const NotificationApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Lab 10.5 Notification',
+      title: 'Lab 10 Notifications',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: const NotificationScreen(),
+      home: const HomeScreen(),
     );
   }
 }

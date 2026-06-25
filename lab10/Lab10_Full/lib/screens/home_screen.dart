@@ -1,45 +1,50 @@
-// Fixed home screen imports
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
 import '../services/session_service.dart';
-import '../services/notification_service.dart';
 import 'login_screen.dart';
-import 'profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authService = AuthService();
-    final sessionService = SessionService();
-    final notificationService = NotificationService();
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  final _sessionService = SessionService();
+  String _token = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    final token = await _sessionService.getToken();
+    if (mounted) {
+      setState(() {
+        _token = token ?? 'No token found';
+      });
+    }
+  }
+
+  Future<void> _logout() async {
+    await _sessionService.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('API Home'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authService.signOut();
-              await sessionService.removeToken();
-              if (context.mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              }
-            },
+            onPressed: _logout,
           ),
         ],
       ),
@@ -47,19 +52,22 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Welcome to Lab 10 Full App!', style: TextStyle(fontSize: 20)),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () => notificationService.requestPermissions(),
-              child: const Text('Request Notification Permissions'),
+            const Icon(Icons.home, size: 100, color: Colors.green),
+            const SizedBox(height: 24),
+            const Text(
+              'Welcome to API Dashboard!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => notificationService.showNotification(
-                title: 'Manual Trigger',
-                body: 'Hello from the Full Integration App!',
+            const Text('Your current API session token:'),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                _token,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                textAlign: TextAlign.center,
               ),
-              child: const Text('Trigger Test Notification'),
             ),
           ],
         ),

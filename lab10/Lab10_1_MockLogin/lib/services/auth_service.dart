@@ -1,14 +1,20 @@
+import 'dart:async';
 import '../models/user.dart';
 
 class AuthService {
-  Future<User?> login(String username, String password) async {
-    // Simulate API delay
+  Future<User> login(String email, String password) async {
+    // Simulate network delay
     await Future.delayed(const Duration(seconds: 2));
 
-    if (username == 'admin' && password == '123456') {
-      return User(username: 'admin', name: 'Administrator');
+    // Mock login logic
+    if (email == 'test@example.com' && password == 'password123') {
+      return User(
+        id: '1',
+        email: email,
+        token: 'mock_jwt_token_abc123',
+      );
     } else {
-      throw Exception('Invalid username or password');
+      throw Exception('Invalid email or password');
     }
   }
 }
